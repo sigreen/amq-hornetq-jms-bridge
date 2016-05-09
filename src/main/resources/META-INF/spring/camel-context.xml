@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="brokerURL" value="vm://amq:61616" />
+		<property name="userName" value="admin" />
+		<property name="password" value="admin" />
+	</bean>
+
+	<bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">org.jboss.naming.remote.client.InitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">remote://localhost:4447</prop>
+				<prop key="java.naming.factory.url.pkgs">org.jnp.interfaces:org.jboss.naming</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="jmsQueueConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiTemplate">
+			<ref bean="jndiTemplate" />
+		</property>
+		<property name="jndiName">
+			<value>jms/RemoteConnectionFactory</value>
+		</property>
+	</bean>
+
+	<bean id="authenticatedConnectionFactory"
+		class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter">
+		<property name="targetConnectionFactory" ref="jmsQueueConnectionFactory" />
+		<property name="username" value="quickstartUser" />
+		<property name="password" value="quickstartPwd1!" />
+	</bean>
+
+	<bean name="jms" class="org.apache.camel.component.jms.JmsComponent">
+		<property name="connectionFactory" ref="authenticatedConnectionFactory" />
+	</bean>
+
+	<camelContext trace="true" xmlns="http://camel.apache.org/schema/spring">
+		<route id="ForwardMsgsToHornetQ">
+			<from uri="activemq:queueA" />
+			<log message="Read Message from ActiveMQ queueA" />
+			<to uri="jms:queueB" />
+			<log message="Wrote Message to hornetQ test queue" />
+		</route>
+		<route id="ReceiveMsgsFromHornetQ">
+			<from uri="jms:queueB" />
+			<log message="Read message from hornetQ test queue" />
+			<to uri="activemq:queueC" />
+			<log message="Wrote message to ActiveMQ queueB" />
+		</route>
+	</camelContext>
+</beans>
