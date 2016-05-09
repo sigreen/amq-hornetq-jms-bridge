@@ -56,6 +56,6 @@ Testing
 Help
 -------------
 
-For more help see the Red Hat support article on creating an A-MQ / HornetQ JMS bridge:
+For more help see the Red Hat support [article](https://access.redhat.com/solutions/739283) on creating an A-MQ / HornetQ JMS bridge:
 
-    https://access.redhat.com/solutions/739283
+    
