@@ -46,11 +46,17 @@ Testing
 -------------
 
 (1) Login to the [HawtIO](http://localhost:8181) console using Chrome / Firefox
+
 (2) Navigate to the ActiveMQ Menu Tab
+
 (3) Click on "queueA" and click the Send button
+
 (4) Enter a test message then click "Send Message"
+
 (5) Observe the message is forwarded to "queueC"
+
 (6) Observe the logs by navigating to the "Logs" tab.  You'll notice the trace output of the message being transferred between A-MQ and Hornet-Q
+
 (7) Try out starting / stopping each route via the "Camel" menu and experiment with flow control of messages
 
 Help
